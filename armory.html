@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="bootstrap-3.1.1-dist/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="bootstrap-3.1.1-dist/css/bootstrap-theme.min.css">
+
+    <style>
+    textarea {
+      width: 400px;
+      height: 100px;
+    }
+    </style>
+  </head>
+  <body>
+    <script src="bundle.js"></script>
+    <div class="container">
+
+    <h1>Armory <small>Watch-Only Master Public Key Generation</small></h1>
+
+    <div class="alert alert-warning">
+      <strong>IMPORTANT: RUN THIS OFFLINE FOR MAXIMUM SECURITY!</strong>
+      <p>
+      Create a paper wallet from Armory and copy paste the "paper wallet" phrase bellow
+      and click the generate button.
+      </p>
+    </div>
+
+    <form>
+    <textarea id="seed">aagh hjfj sihk ietj giik wwai awtd uodh hnji
+soss uaku egod utai itos fijj ihgi jhau jtoo</textarea>
+    <br>
+    <button class="btn btn-primary btn-large" type="submit" onclick="updateResult()">Generate</button>
+    </form>
+    <br><br>
+
+    <pre id="console"></pre>
+
+    <script>
+      var bitcore = require('bitcore'),
+        Address = bitcore.Address,
+        Armory = bitcore.Armory;
+
+      var logs = document.getElementById('console');
+
+      function log (msg) {
+        logs.insertAdjacentHTML('beforeend', msg + '\n');
+      }
+      function clear_log () {
+        logs.innerHTML = '';
+      }
+
+      function getSeed() {
+        return document.getElementById('seed').value;
+      }
+
+      function updateResult () {
+        clear_log();
+        var seed = getSeed();
+
+        var a = Armory.fromSeed(seed);
+        log('Armory MPK: ');
+        log('<textarea onclick="this.select()">' + a.pubkey.toString('hex') + '' + a.chaincode.toString('hex') + '</textarea>');
+        log('');
+        log('Some wallet addresses:');
+        log('');
+        for (var i = 0; i < 5; i++) {
+          log(Address.fromPubKey(a.pubkey).as('base58'));
+          a = a.next();
+        }
+      }
+
+      updateResult();
+    </script>
+
+    </div>
+  </body>
+</html>
